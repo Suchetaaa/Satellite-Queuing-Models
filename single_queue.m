@@ -1,4 +1,4 @@
-function [out_timestamps, mean_time] = single_queue(num_users, num_events, mu, lambda_users, event_times_s, epsilon_node)
+function [out_timestamps, mean_time] = single_queue(num_users, num_events, mu, lambda_users, event_times_s, epsilon_node, final_num_events)
     %Takes in lambdas (from users and satellite) and mu (servicing times)
     % num_users = 10;
     % num_events = 100;
@@ -27,18 +27,19 @@ function [out_timestamps, mean_time] = single_queue(num_users, num_events, mu, l
     event_times_all(num_users+1, :) = event_times_s;
 
     arrival_timestamps_all = sort(event_times_all(:));
+    arrival_timestamps_all = arrival_timestamps_all(1:final_num_events);
 
     %Service times according to exponential distribution
-    service_time = exprnd(1/mu, (num_users + 1)*num_events);
+    service_time = exprnd(1/mu, final_num_events);
 
     %Server and Departyre timestamps
-    server_timestamp = zeros((num_users + 1)*num_events, 1);
-    departure_timestamp = zeros((num_users + 1)*num_events, 1);
+    server_timestamp = zeros(final_num_events, 1);
+    departure_timestamp = zeros(final_num_events, 1);
 
     server_timestamp(1) = 0;
     departure_timestamp(1) = server_timestamp(1) + service_time(1);
 
-    for i = 2:(num_users+1)*num_events
+    for i = 2:final_num_events
         if arrival_timestamps_all(i) < departure_timestamp(i-1)
             server_timestamp(i) = departure_timestamp(i-1);
         else
@@ -50,7 +51,7 @@ function [out_timestamps, mean_time] = single_queue(num_users, num_events, mu, l
     mean_time = mean(departure_timestamp - arrival_timestamps_all);
 %     round(epsilon_node*(num_users+1)*num_events);
 
-    random_indices = randperm((num_users+1)*num_events, round((1-epsilon_node)*(num_users+1)*num_events));
+    random_indices = randperm(final_num_events, round((1-epsilon_node)*final_num_events));
     departure_timestamp(random_indices) = [];
     size(departure_timestamp)
     out_timestamps = departure_timestamp(1:num_events);
