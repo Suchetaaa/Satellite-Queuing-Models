@@ -10,7 +10,7 @@ arrival_timestamps = cumsum(inter_event_times);
 mean_times = zeros(num_nodes);
 mu = abs(randn(num_nodes));
 lambda_users = abs(randn(num_nodes, num_users));
-epsilon = (1-0.3)*rand(num_nodes, 1) + 0.3;
+epsilon = (1-0)*rand(num_nodes, 1) + 0.0;
 
 for i = 1:num_nodes
     [out_timestamps, mean_time] = single_queue(num_users, num_events, mu(i), lambda_users(i, :), arrival_timestamps, epsilon(i), final_num_events);

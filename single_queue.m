@@ -13,6 +13,12 @@ function [out_timestamps, mean_time] = single_queue(num_users, num_events, mu, l
 
     % inter_event_times_s = poissrnd(lambda_node, num_events, 1);
     % event_times_s = cumsum(inter_event_times_s)';
+    
+    [a, ~] = size(event_times_s);
+    if (a ~= num_events)
+        dummy = zeros(num_events-a, 1) + 1000000;
+        event_times_s = [event_times_s; dummy];
+    end
 
     event_times_u = zeros(num_users, num_events);
 
@@ -53,8 +59,12 @@ function [out_timestamps, mean_time] = single_queue(num_users, num_events, mu, l
 
     random_indices = randperm(final_num_events, round((1-epsilon_node)*final_num_events));
     departure_timestamp(random_indices) = [];
-    size(departure_timestamp)
-    out_timestamps = departure_timestamp(1:num_events);
+    [m, ~] = size(departure_timestamp)
+    if (m > num_events)
+        out_timestamps = departure_timestamp(1:num_events);
+    else 
+        out_timestamps = departure_timestamp;
+    end
     
 end
 
