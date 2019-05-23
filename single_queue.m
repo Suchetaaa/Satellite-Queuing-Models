@@ -50,7 +50,7 @@ function [out_timestamps, mean_time] = single_queue(num_users, num_events, mu, l
     mean_time = mean(departure_timestamp - arrival_timestamps_all);
 %     round(epsilon_node*(num_users+1)*num_events);
 
-    random_indices = randperm((num_users+1)*num_events, round(epsilon_node*(num_users+1)*num_events));
+    random_indices = randperm((num_users+1)*num_events, round((1-epsilon_node)*(num_users+1)*num_events));
     departure_timestamp(random_indices) = [];
     size(departure_timestamp)
     out_timestamps = departure_timestamp(1:num_events);
