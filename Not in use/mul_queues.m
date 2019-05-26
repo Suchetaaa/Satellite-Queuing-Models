@@ -1,8 +1,8 @@
-num_nodes = 30; 
+num_nodes = 1; 
 lambda_earth = 1;
 num_events = 1000;
 num_users = 10;
-final_num_events = 0.6*(num_users + 1)*num_events;
+final_num_events = 1*(num_users + 1)*num_events;
 
 inter_event_times = poissrnd(lambda_earth, num_events, 1);
 arrival_timestamps = cumsum(inter_event_times);

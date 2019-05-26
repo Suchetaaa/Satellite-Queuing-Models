@@ -1,0 +1,11 @@
+num_users = 10;
+lambda_users = abs(randn(1, num_users));
+mu_node = 1;
+epsilon_node = 1;
+num_events = 200;
+num_events_considered = 0.4*(num_users)*num_events;
+
+[departure_timestamps, waiting_times, buffer_lengths] = first_node(num_users, lambda_users, mu_node, epsilon_node, num_events, num_events_considered);
+
+a = 1:length(buffer_lengths);
+plot()

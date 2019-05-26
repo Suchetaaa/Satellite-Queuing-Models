@@ -1,6 +1,6 @@
 function [sojourntime]=mm1(lambda,mu,sizev)
 
-intera =1/lambda*log(1./rand(1,sizev));
+intera =1/lambda*log(1./rand(1,sizev))
 service=1/mu*log(1./rand(1,sizev));
 
 % Times of arrival, server (leaving the queue) and departure (leaving the
