@@ -23,7 +23,7 @@ function [final_arrival_times, departure_timestamps, waiting_times, buffer_lengt
     server_timestamps = zeros(1, num_events_considered);
     departure_timestamps = zeros(1, num_events_considered);
 
-    server_timestamps(1) = offset;
+    server_timestamps(1) = 0;
     departure_timestamps(1) = server_timestamps(1) + inter_service_times(1);
 
     for i = 2:num_events_considered
