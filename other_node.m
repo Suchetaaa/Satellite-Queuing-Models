@@ -1,4 +1,4 @@
-function [arrival_timestamps_all, departure_timestamps_out, largest_time_out] = other_node(departure_timestamps, num_users, lambda_users, mu_node, epsilon_node, largest_time)
+function [arrival_timestamps_all, departure_timestamps_out, ground_indices, largest_time_out] = other_node(departure_timestamps, num_users, lambda_users, mu_node, epsilon_node, largest_time)
 %     num_users = 10;
 %     lambda_users = abs(randn(1, num_users));
 %     mu_node = 1;
@@ -29,6 +29,13 @@ function [arrival_timestamps_all, departure_timestamps_out, largest_time_out] = 
     num_useful = numel(a(a>0));
     arrival_timestamps_all = arrival_timestamps_all(1:num_useful, 1)';
     
+    [~, m] = size(departure_timestamps);
+    ground_indices = zeros(1, m);
+    
+    for k = 1 : m
+        ground_indices(1, k) = find(arrival_timestamps_all == departure_timestamps(1, k));
+    end
+     
     server_timestamps = zeros(1, num_useful);
     departure_timestamps_out = zeros(1, num_useful);
     
@@ -48,6 +55,19 @@ function [arrival_timestamps_all, departure_timestamps_out, largest_time_out] = 
     
     random_indices = randperm(num_useful, round((1-epsilon_node)*num_useful));
     departure_timestamps_out(random_indices) = [];
+   
+    l = 0;
+    for k = 1 : m
+        
+%         ground_indices(1, k)
+        a = find(random_indices == ground_indices(1, k)); 
+        if (a ~= 0)
+            l = l + 1;
+            unwanted_indices(1, l) = k;
+        end
+    end
+    
+    ground_indices(unwanted_indices) = [];
     
     largest_time_out = max(departure_timestamps_out); 
 end
