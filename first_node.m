@@ -1,4 +1,4 @@
-function [departure_timestamps, waiting_times, buffer_lengths, last_index] = first_node(num_users, lambda_users, mu_node, epsilon_node, num_events, num_events_considered)
+function [departure_timestamps, waiting_times, buffer_lengths, largest_time] = first_node(num_users, lambda_users, mu_node, epsilon_node, num_events, num_events_considered)
     % num_users = 10;
     % lambda_users = abs(randn(1, num_users));
     % mu_node = 2;
@@ -18,8 +18,8 @@ function [departure_timestamps, waiting_times, buffer_lengths, last_index] = fir
 
     inter_service_times = 1/mu_node*log(1./rand(1,num_events_considered));
 
-    server_timestamps = zeros(num_events_considered, 1);
-    departure_timestamps = zeros(num_events_considered, 1);
+    server_timestamps = zeros(1, num_events_considered);
+    departure_timestamps = zeros(1, num_events_considered);
 
     server_timestamps(1) = 0;
     departure_timestamps(1) = server_timestamps(1) + inter_service_times(1);
@@ -47,7 +47,7 @@ function [departure_timestamps, waiting_times, buffer_lengths, last_index] = fir
     random_indices = randperm(num_events_considered, round((1-epsilon_node)*num_events_considered));
     departure_timestamps(random_indices) = [];
     
-    last_index = size(departure_timestamps);
+    largest_time = max(departure_timestamps);
 end
 
     
