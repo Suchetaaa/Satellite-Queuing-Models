@@ -9,10 +9,17 @@ num_events_considered = 0.4*(num_users)*num_events;
 
 num_users = 5;
 lambda_users = (0.5-0.2).*abs(randn(1, num_users)) + 0.2;
-mu_node = 3;
+mu_node = 5;
 epsilon_node = 0.6;
 
-[arrival_times_in_2, delay, arrival_timestamps_all, departure_timestamps_out_1, ground_indices_out, largest_time_out, buffer_lengths, waiting_times] = second_node(departure_timestamps, num_users, lambda_users, mu_node, epsilon_node, largest_time, arrival_times_in);
+[arrival_times_in_2, delay_2, arrival_timestamps_all, departure_timestamps_out_1, ground_indices_out, largest_time_out_2, buffer_lengths_2, waiting_times_2] = second_node(departure_timestamps, num_users, lambda_users, mu_node, epsilon_node, largest_time, arrival_times_in);
+
+num_users = 5;
+lambda_users = (0.5-0.2).*abs(randn(1, num_users)) + 0.2;
+mu_node = 7;
+epsilon_node = 0.6;
+
+[arrival_times_in_3, delay_3, arrival_timestamps_all, departure_timestamps_out_2, ground_indices_out_3, largest_time_out_3, buffer_lengths_3, waiting_times_3] = other_nodes(departure_timestamps_out_1, num_users, lambda_users, mu_node, epsilon_node, largest_time_out_2, arrival_times_in_2, ground_indices_out);
 
 % subplot(2, 2, 1)
 % [m, ~] = size(buffer_lengths);

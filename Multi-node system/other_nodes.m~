@@ -1,4 +1,4 @@
-function [arrival_times_in, delay, arrival_timestamps_all, departure_timestamps_out_1, ground_indices_out, largest_time_out, buffer_lengths, waiting_times] = other_nodes(departure_timestamps, num_users, lambda_users, mu_node, epsilon_node, largest_time, arrival_times_in, ground_indices_in)
+function [arrival_times_in, delay, arrival_timestamps_all, departure_timestamps_out_1, ground_indices_out, largest_time_out, buffer_lengths, waiting_times] = other_nodes(departure_timestamps, num_users, lambda_users, mu_node, epsilon_node, largest_time, arrival_times_in)
 %     num_users = 10;
 %     lambda_users = abs(randn(1, num_users));
 %     mu_node = 1;
@@ -32,11 +32,11 @@ function [arrival_times_in, delay, arrival_timestamps_all, departure_timestamps_
     
     offset = arrival_timestamps_all(1);
     
-    [~, m] = size(ground_indices_in);
+    [~, m] = size(departure_timestamps);
     ground_indices = zeros(1, m);
     
     for k = 1 : m
-        ground_indices(1, k) = find(arrival_timestamps_all == departure_timestamps(1, ground_indices_in(1, k)));
+        ground_indices(1, k) = find(arrival_timestamps_all == departure_timestamps(1, k));
     end
      
     server_timestamps = zeros(1, num_useful);
