@@ -1,4 +1,4 @@
-function [final_arrival_times, departure_timestamps, waiting_times, buffer_lengths, largest_time] = first_node(num_users, lambda_users, mu_node, epsilon_node, num_events, num_events_considered)
+function [ground_indices, final_arrival_times, departure_timestamps, waiting_times, buffer_lengths, largest_time] = first_node(num_users, lambda_users, mu_node, epsilon_node, num_events, num_events_considered)
     % num_users = 10;
     % lambda_users = abs(randn(1, num_users));
     % mu_node = 2;
@@ -52,6 +52,9 @@ function [final_arrival_times, departure_timestamps, waiting_times, buffer_lengt
     final_arrival_times(random_indices) = [];
     
     largest_time = max(departure_timestamps);
+    
+    [~, m] = size(departure_timestamps);
+    ground_indices = 1:m;
 end
 
     

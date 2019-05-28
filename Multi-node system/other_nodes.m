@@ -71,8 +71,9 @@ function [arrival_times_in, delay, arrival_timestamps_all, departure_timestamps_
     for i = 1 : m
         delay = (departure_timestamps_out(ground_indices') - arrival_times_in');
     end
-        
-        
+    
+    epsilon_node
+    round((1-epsilon_node)*num_useful)
     random_indices = randperm(num_useful, round((1-epsilon_node)*num_useful));
     departure_timestamps_out_1 = departure_timestamps_out;
     departure_timestamps_out_1(random_indices) = [];
