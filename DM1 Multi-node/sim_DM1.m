@@ -11,8 +11,12 @@ for i = 1:length(rho)
         min_age = W_sim(i);
         min_rho = rho(i);
     end
+    beta = -1*rho(i)*lambertw((-1/rho(i)) * (exp(-1/rho(i))));
+    W_mm1(i) = 1/(2*rho(i)) + 1/(1-beta);
 end
-W_mm1 = 1 + 1./rho + (rho.^2)./(1-rho);
+
+
+% W_mm1 = 1 + 1./rho + (rho.^2)./(1-rho);
 
 figure
 plot(rho, W_sim, 'b', 'linestyle', 'none','marker', 's', 'markersize', 8, 'linewidth', 1.5); hold on;
