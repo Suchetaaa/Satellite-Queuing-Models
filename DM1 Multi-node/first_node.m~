@@ -1,16 +1,45 @@
 num_users = 10; 
 num_events = 1000;
 num_events_considered = 0.4*num_users*num_events;
+mu_node = 1;
 
 offset_start = (1-0).*rand(num_users, 1) + 0;
 arrival_periods = (4-1).*rand(num_users, 1) + 1;
 num_events_matrix = 1:num_events;
 
-arrival_timestamps_unnormalized =  offset_start + arrival_periods*num_events_matrix ;
-arrival_timestamps_unsorted = arrival_timestamps_unnormalized - min(min(arrival_timestamps_unnormalized));
+arrival_timestamps_unsorted =  offset_start + arrival_periods*num_events_matrix ;
 
 arrival_timestamps = sort(arrival_timestamps_unsorted(:));
-arrival_timestamps = arrival_timestamps(1:num_events_considered);
+final_arrival_times = arrival_timestamps(1:num_events_considered)';
+offset = min(arrival_timestamps);
+
+inter_service_times = 1/mu_node*log(1./rand(1,num_events_considered));
+
+server_timestamps = zeros(1, num_events_considered);
+departure_timestamps = zeros(1, num_events_considered);
+
+server_timestamps(1) = offset;
+departure_timestamps(1) = server_timestamps(1) + inter_service_times(1);
+
+for i = 2:num_events_considered
+    if final_arrival_times(i) < departure_timestamps(i-1)
+        server_timestamps(i) = departure_timestamps(i-1);
+    else
+        server_timestamps(i) = final_arrival_times(i);
+    end
+    departure_timestamps(i) = server_timestamps(i) + inter_service_times(i);
+end
+
+j = 0;
+times = 0:0.1:departure_timestamps(1);
+for i = 2:num_events_considered
+    dummy = departure_timestamps(i-1):0.1:departure_timestamps(i);
+    times = [times dummy];
+end
+
+
+    
+    
 
 
 
