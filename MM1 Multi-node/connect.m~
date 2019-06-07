@@ -1,17 +1,19 @@
 num_nodes = 2;
 
 for i = 1:10
-    epsilon_node(i) = (0.8-0.4).*rand(1, 1) + 0.4;
+%     epsilon_node(i) = (0.8-0.5).*rand(1, 1) + 0.5;
+    epsilon_node(i) = 1;
 end
     
 num_users = 5;
 
 for i = 1:num_users
-    lambda_users = (0.4-0.1).*rand(10, num_users) + 0.1;
+%     lambda_users = (0.4-0.1).*rand(10, num_users) + 0.1;
+    lambda_users = 
 end
     
 mu_node = num_users*0.4 ;
-num_events = 3000;
+num_events = 5000;
 num_events_considered = 0.4*(num_users)*num_events;
 
 [ground_indices, final_arrival_times, departure_timestamps, waiting_times, buffer_lengths, largest_time] = first_node(num_users, lambda_users(1, :), mu_node, epsilon_node(1), num_events, num_events_considered);
@@ -47,7 +49,7 @@ num_users = 5;
 
 % lambda_users = (0.4-0.1).*rand(1, num_users) + 0.1;
 mu_node = num_users*0.4 ;
-num_events = 3000;
+num_events = 5000;
 num_events_considered = 0.4*(num_users)*num_events;
 
 [ground_indices, final_arrival_times, departure_timestamps, waiting_times, buffer_lengths, largest_time] = first_node(num_users, lambda_users(1, :), mu_node, epsilon_node(1), num_events, num_events_considered);
@@ -82,7 +84,7 @@ num_users = 5;
 
 % lambda_users = (0.4-0.1).*rand(1, num_users) + 0.1;
 mu_node = num_users*0.4;
-num_events = 3000;
+num_events = 5000;
 num_events_considered = 0.4*(num_users)*num_events;
 
 [ground_indices, final_arrival_times, departure_timestamps, waiting_times, buffer_lengths, largest_time] = first_node(num_users, lambda_users(1, :), mu_node, epsilon_node(1), num_events, num_events_considered);
@@ -116,7 +118,7 @@ num_users = 5;
 
 % lambda_users = (0.4-0.1).*rand(1, num_users) + 0.1;
 mu_node = num_users*0.4;
-num_events = 3000;
+num_events = 5000;
 num_events_considered = 0.4*(num_users)*num_events;
 
 [ground_indices, final_arrival_times, departure_timestamps, waiting_times, buffer_lengths, largest_time] = first_node(num_users, lambda_users(1, :), mu_node, epsilon_node(1), num_events, num_events_considered);
