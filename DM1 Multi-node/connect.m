@@ -1,28 +1,30 @@
-num_nodes = 2;
-
+offset_users = zeros(10, 5);
 for i = 1:10
 %     epsilon_node(i) = (0.8-0.5).*rand(1, 1) + 0.5;
     epsilon_node(i) = 0.9;
+    offset_users(i, :) = (0.5 - 0).*rand(1, 5) + 0;
 end
-    
-num_users = 5;
 
 %     lambda_users = (0.4-0.1).*rand(10, num_users) + 0.1;
-lambda_users = ones(10, num_users);
+lambda_users = ones(10, 5);
 higher = 2;
+
+num_nodes = 2;
+    
+num_users = 5;
     
 mu_node = num_users*higher ;
 num_events = 5000;
 num_events_considered = 0.4*(num_users)*num_events;
 
-[ground_indices, final_arrival_times, departure_timestamps, waiting_times, buffer_lengths, largest_time] = first_node(num_users, lambda_users(1, :), mu_node, epsilon_node(1), num_events, num_events_considered);
+[ground_indices, final_arrival_times, departure_timestamps, waiting_times, buffer_lengths, largest_time] = first_node(num_users, lambda_users(1, :), offset_users(1, :), mu_node, epsilon_node(1), num_events, num_events_considered);
 
 
 for i = 2:num_nodes
 %     lambda_users = (0.4-0.1).*rand(1, num_users) + 0.1;
     mu_node = (num_users*i)*higher;
     
-    [arrival_times_out, delay, arrival_timestamps_all, departure_timestamps_out, ground_indices_out, largest_time_out, buffer_lengths, waiting_times] = other_nodes(departure_timestamps, num_users, lambda_users(i, :), mu_node, epsilon_node(i), largest_time, final_arrival_times, ground_indices);
+    [arrival_times_out, delay, arrival_timestamps_all, departure_timestamps_out, ground_indices_out, largest_time_out, buffer_lengths, waiting_times] = other_nodes(departure_timestamps, num_users, lambda_users(i, :), offset_users(i, :) ,mu_node, epsilon_node(i), largest_time, final_arrival_times, ground_indices);
     final_arrival_times = arrival_times_out;
     departure_timestamps = departure_timestamps_out;
     ground_indices = ground_indices_out;
@@ -54,13 +56,13 @@ mu_node = num_users*higher ;
 num_events = 5000;
 num_events_considered = 0.4*(num_users)*num_events;
 
-[ground_indices, final_arrival_times, departure_timestamps, waiting_times, buffer_lengths, largest_time] = first_node(num_users, lambda_users(1, :), mu_node, epsilon_node(1), num_events, num_events_considered);
+[ground_indices, final_arrival_times, departure_timestamps, waiting_times, buffer_lengths, largest_time] = first_node(num_users, lambda_users(1, :), offset_users(1, :), mu_node, epsilon_node(1), num_events, num_events_considered);
 
 
 for i = 2:num_nodes
 %     lambda_users = (0.4-0.1).*rand(1, num_users) + 0.1;
     mu_node = (num_users*i)*higher;
-    [arrival_times_out, delay, arrival_timestamps_all, departure_timestamps_out, ground_indices_out, largest_time_out, buffer_lengths, waiting_times] = other_nodes(departure_timestamps, num_users, lambda_users(i, :), mu_node, epsilon_node(i), largest_time, final_arrival_times, ground_indices);
+    [arrival_times_out, delay, arrival_timestamps_all, departure_timestamps_out, ground_indices_out, largest_time_out, buffer_lengths, waiting_times] = other_nodes(departure_timestamps, num_users, lambda_users(i, :), offset_users(i, :), mu_node, epsilon_node(i), largest_time, final_arrival_times, ground_indices);
     final_arrival_times = arrival_times_out;
     departure_timestamps = departure_timestamps_out;
     ground_indices = ground_indices_out;
@@ -92,13 +94,13 @@ mu_node = num_users*higher;
 num_events = 5000;
 num_events_considered = 0.4*(num_users)*num_events;
 
-[ground_indices, final_arrival_times, departure_timestamps, waiting_times, buffer_lengths, largest_time] = first_node(num_users, lambda_users(1, :), mu_node, epsilon_node(1), num_events, num_events_considered);
+[ground_indices, final_arrival_times, departure_timestamps, waiting_times, buffer_lengths, largest_time] = first_node(num_users, lambda_users(1, :), offset_users(1, :), mu_node, epsilon_node(1), num_events, num_events_considered);
 
 
 for i = 2:num_nodes
 %     lambda_users = (0.4-0.1).*rand(1, num_users) + 0.1;
     mu_node = (num_users*i)*higher;
-    [arrival_times_out, delay, arrival_timestamps_all, departure_timestamps_out, ground_indices_out, largest_time_out, buffer_lengths, waiting_times] = other_nodes(departure_timestamps, num_users, lambda_users(i, :), mu_node, epsilon_node(i), largest_time, final_arrival_times, ground_indices);
+    [arrival_times_out, delay, arrival_timestamps_all, departure_timestamps_out, ground_indices_out, largest_time_out, buffer_lengths, waiting_times] = other_nodes(departure_timestamps, num_users, lambda_users(i, :), offset_users(i, :), mu_node, epsilon_node(i), largest_time, final_arrival_times, ground_indices);
     final_arrival_times = arrival_times_out;
     departure_timestamps = departure_timestamps_out;
     ground_indices = ground_indices_out;
@@ -111,7 +113,6 @@ subplot(2, 2, 3)
 delay_end2end = departure_timestamps(ground_indices') - arrival_times_out';
 % [~, m] = size(delay_end2end);
 % plot(1:m, delay_end2end');
-
 [cdf_out, delay_sorted] = cdf(delay_end2end);
 plot(delay_sorted, cdf_out);
 title("Nodes=7");
@@ -129,13 +130,13 @@ mu_node = num_users*higher;
 num_events = 5000;
 num_events_considered = 0.4*(num_users)*num_events;
 
-[ground_indices, final_arrival_times, departure_timestamps, waiting_times, buffer_lengths, largest_time] = first_node(num_users, lambda_users(1, :), mu_node, epsilon_node(1), num_events, num_events_considered);
+[ground_indices, final_arrival_times, departure_timestamps, waiting_times, buffer_lengths, largest_time] = first_node(num_users, lambda_users(1, :), offset_users(1, :), mu_node, epsilon_node(1), num_events, num_events_considered);
 
 
 for i = 2:num_nodes
 %     lambda_users = (0.4-0.1).*rand(1, num_users) + 0.1;
     mu_node = (num_users*i)*higher;
-    [arrival_times_out, delay, arrival_timestamps_all, departure_timestamps_out, ground_indices_out, largest_time_out, buffer_lengths, waiting_times] = other_nodes(departure_timestamps, num_users, lambda_users(i, :), mu_node, epsilon_node(i), largest_time, final_arrival_times, ground_indices);
+    [arrival_times_out, delay, arrival_timestamps_all, departure_timestamps_out, ground_indices_out, largest_time_out, buffer_lengths, waiting_times] = other_nodes(departure_timestamps, num_users, lambda_users(i, :), offset_users(i, :), mu_node, epsilon_node(i), largest_time, final_arrival_times, ground_indices);
     final_arrival_times = arrival_times_out;
     departure_timestamps = departure_timestamps_out;
     ground_indices = ground_indices_out;
@@ -148,7 +149,6 @@ subplot(2, 2, 4)
 delay_end2end = departure_timestamps(ground_indices') - arrival_times_out';
 % [~, m] = size(delay_end2end);
 % plot(1:m, delay_end2end');
-
 [cdf_out, delay_sorted] = cdf(delay_end2end);
 plot(delay_sorted, cdf_out);
 title("Nodes = 10");
