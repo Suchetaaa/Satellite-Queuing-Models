@@ -39,14 +39,14 @@ delay_end2end = departure_timestamps(ground_indices') - arrival_times_out';
 % [~, m] = size(delay_end2end);
 % plot(1:m, delay_end2end');
 
-[cdf_out, delay_sorted] = cdf(delay_end2end);
-plot(delay_sorted, cdf_out);
-av_age(1) = av_age_func(departure_timestamps(ground_indices'), arrival_times_out');
+% [cdf_out, delay_sorted] = cdf(delay_end2end);
+% plot(delay_sorted, cdf_out);
+av_age = av_age_func();
 title("Nodes=2");
 
 min_delay(1) = min(delay_end2end);
 max_delay(1) = max(delay_end2end);
-% average_buff_length(1) = sum(buffer_lengths)/m;
+average_buff_length(1) = sum(buffer_lengths)/m;
 
 
 num_nodes = 5;
@@ -80,12 +80,11 @@ delay_end2end = departure_timestamps(ground_indices') - arrival_times_out';
 
 [cdf_out, delay_sorted] = cdf(delay_end2end);
 plot(delay_sorted, cdf_out);
-av_age(2) = av_age_func(departure_timestamps(ground_indices'), arrival_times_out');
 title("Nodes=5");
 
 min_delay(2) = min(delay_end2end);
 max_delay(2) = max(delay_end2end);
-% average_buff_length(2) = sum(buffer_lengths)/m;
+average_buff_length(2) = sum(buffer_lengths)/m;
 
 
 num_nodes = 7;
@@ -117,12 +116,11 @@ delay_end2end = departure_timestamps(ground_indices') - arrival_times_out';
 % plot(1:m, delay_end2end');
 [cdf_out, delay_sorted] = cdf(delay_end2end);
 plot(delay_sorted, cdf_out);
-av_age(3) = av_age_func(departure_timestamps(ground_indices'), arrival_times_out');
 title("Nodes=7");
 
 min_delay(3) = min(delay_end2end);
 max_delay(3) = max(delay_end2end);
-% average_buff_length(3) = sum(buffer_lengths)/m;
+average_buff_length(3) = sum(buffer_lengths)/m;
 
 
 num_nodes = 10;
@@ -154,12 +152,11 @@ delay_end2end = departure_timestamps(ground_indices') - arrival_times_out';
 % plot(1:m, delay_end2end');
 [cdf_out, delay_sorted] = cdf(delay_end2end);
 plot(delay_sorted, cdf_out);
-av_age(4) = av_age_func(departure_timestamps(ground_indices'), arrival_times_out');
 title("Nodes = 10");
 
 min_delay(4) = min(delay_end2end);
 max_delay(4) = max(delay_end2end);
-% average_buff_length(4) = sum(buffer_lengths)/m;
+average_buff_length(4) = sum(buffer_lengths)/m;
 
 
     
