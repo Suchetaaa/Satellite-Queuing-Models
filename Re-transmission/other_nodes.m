@@ -72,9 +72,11 @@ function [arrival_times_in, delay, arrival_timestamps_all, departure_timestamps_
         delay = (departure_timestamps_out(ground_indices') - arrival_times_in');
     end
     
-    epsilon_node
-    round((1-epsilon_node)*num_useful)
-    random_indices = randperm(num_useful, round((1-epsilon_node)*num_useful));
+%     epsilon_node
+%     round((1-epsilon_node)*num_useful)
+%     random_indices = randperm(num_useful, round((1-epsilon_node)*num_useful));
+    random_indices = rand(1, num_useful) > epsilon_node;
+    random_indices = find(random_indices == 1);
     departure_timestamps_out_1 = departure_timestamps_out;
     departure_timestamps_out_1(random_indices) = [];
    
@@ -88,10 +90,11 @@ function [arrival_times_in, delay, arrival_timestamps_all, departure_timestamps_
         end
     end
     
-    ground_indices(unwanted_indices) = []; 
+    ground_indices(unwanted_indices) = [];
     arrival_times_in(unwanted_indices) = [];
     
     for k = 1 : m-l
+        departure_timestamps_out(1, ground_indices(1, k));
         ground_indices_out(1, k) = find(departure_timestamps_out_1 == departure_timestamps_out(1, ground_indices(1, k)));
     end
         

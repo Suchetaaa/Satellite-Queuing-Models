@@ -47,8 +47,8 @@ function [ground_indices, final_arrival_times, departure_timestamps, waiting_tim
     
     waiting_times = (departure_timestamps - final_arrival_times);
     
-    random_indices = (rand(1, num_events_considered) > epsilon_node);
-    
+    random_indices = rand(1, )
+    random_indices = randperm(num_events_considered, round((1-epsilon_node)*num_events_considered));
     departure_timestamps(random_indices) = [];
     
     final_arrival_times(random_indices) = [];
