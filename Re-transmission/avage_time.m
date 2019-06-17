@@ -1,4 +1,4 @@
-function [av_age] = avage_time(departure_timestamps, final_arrival_times, times)
+function [av_age, age] = avage_time(departure_timestamps, final_arrival_times, times)
     j = 1;
     offset = 0;
     age = times;
@@ -14,16 +14,16 @@ function [av_age] = avage_time(departure_timestamps, final_arrival_times, times)
         age(i) = age(i) - offset;
     end
     
-    length(times)
-    %plot(times, age);
+    length(times);
+    plot(times, age);
 
     av_age = zeros(1, length(age));
     for i = 2 : length(times)
         dummy_time = times(1, 1:i);
         dummy_age = age(1, 1:i);
-        i
+        i;
         av_age(i) = trapz(dummy_time, dummy_age);
     end
 
-    plot(times, av_age);
+    %plot(times, av_age);
 end
