@@ -1,7 +1,7 @@
 offset_users = zeros(10, 10);
 for i = 1:10
 %     epsilon_node(i) = (0.8-0.5).*rand(1, 1) + 0.5;
-    epsilon_node(i) = 0.95;
+    epsilon_node(i) = 0.9;
     offset_users(i, :) = (0.5 - 0).*rand(1, 10) + 0;
 end
 
@@ -9,9 +9,9 @@ end
 lambda_users = ones(10, 5);
 higher = 5;
 
-max_retransmissions = 1;
+max_retransmissions = 2;
 
-num_nodes = 2;
+num_nodes = 6;
 num_users = 5;
     
 mu_node = num_users*higher ;

@@ -31,35 +31,49 @@ function [ground_indices, final_arrival_times, departure_timestamps, waiting_tim
     random_indices_1_useful = rand(1, num_events_considered) > epsilon_node;
     random_indices_1 = find(random_indices_1_useful == 1);
     number = length(random_indices_1);
-    random_indices_2 = rand(1, number) > epsilon_node;
-    length(find(random_indices_2 == 1));
-%     random_indices_3 = rand(1, num_events_considered) > epsilon_node;
+    random_indices_2_useful = rand(1, number) > epsilon_node;
+    random_indices_2 = find(random_indices_2_useful == 1);
+    number_2 = length(random_indices_2);
+    random_indices_3 = rand(1, number_2) > epsilon_node;
 
-    for i = 1 : number 
-        if (random_indices_2(i) == 1)
-            missed(random_indices_1(i)) = 1;
+    for i = 1 : number_2 
+        if (random_indices_3(i) == 1)
+            missed(random_indices_1(random_indices_2(i))) = 1;
         end
     end
             
-%     for i = 1:num_events_considered
-%         retransmissions(1, i) = min(max_retransmissions, random_indices_1_useful(i));
-%     end
+    for i = 1:number
+        if (random_indices_2_useful(i) == 1)
+            retransmissions(1, random_indices_1(i)) = 2;
+        else
+            retransmissions(1, random_indices_1(i)) = 1;
+        end
+    end
 
+    server_timestamps(1) = offset;
     index_missing = 1;
 
-    if (retransmissions(1) ~= 1)
-        server_timestamps(1) = offset;
-        departure_timestamps(1) = server_timestamps(1) + inter_service_times(1);
-    end
-    if (retransmissions(1) == 1)
-        server_timestamps(1) = offset;
+    if (retransmissions(1) == 2)
+        departure_timestamps(1) = server_timestamps(1) + inter_service_times(1) + inter_service_times(2) + inter_service_times(3);
+        index_missing = index_missing + 2;
+    elseif (retransmissions(1) == 1)
         departure_timestamps(1) = server_timestamps(1) + inter_service_times(1) + inter_service_times(2);
         index_missing = index_missing + 1;
+    else
+        departure_timestamps(1) = server_timestamps(1) + inter_service_times(1);
     end
     
 
     for i = 2:num_events_considered
-        if (retransmissions(i) == 1)
+        if (retransmissions(i) == 2)
+            if final_arrival_times(i) < departure_timestamps(i-1)
+                server_timestamps(i) = departure_timestamps(i-1);
+            else
+                server_timestamps(i) = final_arrival_times(i);
+            end
+            departure_timestamps(i) = server_timestamps(i) + inter_service_times(i+index_missing-1) + inter_service_times(i+index_missing) + inter_service_times(i+index_missing+1);
+            index_missing = index_missing + 2;
+        elseif (retransmissions(i) == 1)
             if final_arrival_times(i) < departure_timestamps(i-1)
                 server_timestamps(i) = departure_timestamps(i-1);
             else
@@ -67,8 +81,7 @@ function [ground_indices, final_arrival_times, departure_timestamps, waiting_tim
             end
             departure_timestamps(i) = server_timestamps(i) + inter_service_times(i+index_missing-1) + inter_service_times(i+index_missing);
             index_missing = index_missing + 1;
-        end
-        if (retransmissions(i) ~= 1)
+        else
             if final_arrival_times(i) < departure_timestamps(i-1)
                 server_timestamps(i) = departure_timestamps(i-1);
             else

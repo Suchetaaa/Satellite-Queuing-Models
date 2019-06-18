@@ -40,40 +40,60 @@ function [arrival_times_in, delay, arrival_timestamps_all, departure_timestamps_
     server_timestamps = zeros(1, num_useful);
     departure_timestamps_out = zeros(1, num_useful);
     
+    inter_service_times = 1/mu_node*log(1./rand(1,(max_retransmissions+1)*num_useful));
+    
     retransmissions = zeros(1, num_useful);
     missed = zeros(1, num_useful);
     
     random_indices_1_useful = rand(1, num_useful) > epsilon_node;
     random_indices_1 = find(random_indices_1_useful == 1);
     number = length(random_indices_1);
-    random_indices_2 = rand(1, number) > epsilon_node;
-%     random_indices_3 = rand(1, num_useful) > epsilon_node;
-    
-    inter_service_times = 1/mu_node*log(1./rand(1,(max_retransmissions + 1)*num_useful));
-    
-    for i = 1 : number 
-        if (random_indices_2(i) == 1)
-            missed(random_indices_1(i)) = 1;
+    random_indices_2_useful = rand(1, number) > epsilon_node;
+    random_indices_2 = find(random_indices_2_useful == 1);
+    number_2 = length(random_indices_2);
+    random_indices_3 = rand(1, number_2) > epsilon_node;
+
+    for i = 1 : number_2 
+        if (random_indices_3(i) == 1)
+            missed(random_indices_1(random_indices_2(i))) = 1;
         end
     end
-    
-    missed;
+            
+    for i = 1:number
+        if (random_indices_2_useful(i) == 1)
+            retransmissions(1, random_indices_1(i)) = 2;
+        else
+            retransmissions(1, random_indices_1(i)) = 1;
+        end
+    end
 
     index_missing = 1;
 
-    if (random_indices_1_useful(1) ~= 1)
+    if (retransmissions(1) == 2)
         server_timestamps(1) = offset;
-        departure_timestamps_out(1) = server_timestamps(1) + inter_service_times(1);
-    end
-    if (random_indices_1_useful(1) == 1)
+        departure_timestamps_out(1) = server_timestamps(1) + inter_service_times(1) + inter_service_times(2) + inter_service_times(3);
+        index_missing = index_missing + 2;
+    elseif (retransmissions(1) == 1)
         server_timestamps(1) = offset;
         departure_timestamps_out(1) = server_timestamps(1) + inter_service_times(1) + inter_service_times(2);
         index_missing = index_missing + 1;
+    else
+        server_timestamps(1) = offset;
+        departure_timestamps_out(1) = server_timestamps(1) + inter_service_times(1);
     end
+    
     
 
     for i = 2:num_useful
-        if (random_indices_1_useful(i) == 1)
+        if (retransmissions(i) == 2)
+            if arrival_timestamps_all(i) < departure_timestamps_out(i-1)
+                server_timestamps(i) = departure_timestamps_out(i-1);
+            else
+                server_timestamps(i) = arrival_timestamps_all(i);
+            end
+            departure_timestamps_out(i) = server_timestamps(i) + inter_service_times(i+index_missing-1) + inter_service_times(i+index_missing) + inter_service_times(i+index_missing+1);
+            index_missing = index_missing + 2;
+        elseif (retransmissions(i) == 1)
             if arrival_timestamps_all(i) < departure_timestamps_out(i-1)
                 server_timestamps(i) = departure_timestamps_out(i-1);
             else
@@ -81,8 +101,7 @@ function [arrival_times_in, delay, arrival_timestamps_all, departure_timestamps_
             end
             departure_timestamps_out(i) = server_timestamps(i) + inter_service_times(i+index_missing-1) + inter_service_times(i+index_missing);
             index_missing = index_missing + 1;
-        end
-        if (random_indices_1_useful(i) ~= 1)
+        else
             if arrival_timestamps_all(i) < departure_timestamps_out(i-1)
                 server_timestamps(i) = departure_timestamps_out(i-1);
             else
