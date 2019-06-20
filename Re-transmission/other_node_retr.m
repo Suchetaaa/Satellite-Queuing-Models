@@ -142,8 +142,10 @@ function [arrival_times_in, delay, arrival_timestamps_all, departure_timestamps_
         end
     end
     
-    ground_indices(unwanted_indices) = [];
-    arrival_times_in(unwanted_indices) = [];
+    if (l ~= 0)
+        ground_indices(unwanted_indices) = [];
+        arrival_times_in(unwanted_indices) = [];
+    end
     
     for k = 1 : m-l
         ground_indices_out(1, k) = find(departure_timestamps_out_1 == departure_timestamps_out(1, ground_indices(1, k)));
