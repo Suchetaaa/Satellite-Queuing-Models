@@ -16,7 +16,7 @@ function [av_age] = av_age_func(departure_timestamps, final_arrival_times, times
 
 %     plot(times, age);
 
-    trapz(times, age)
-    max(times)
+    trapz(times, age);
+    max(times);
     av_age = trapz(times, age)/max(times);
 end
