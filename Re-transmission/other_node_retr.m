@@ -5,9 +5,14 @@ function [arrival_times_in, delay, arrival_timestamps_all, departure_timestamps_
     while done == 0
         j = j+1;
         event_times_users = zeros(num_users, j);
+%         for i = 1:num_users
+%             num_events_matrix = 1:j;
+%             event_times_users(i, :) = offset_users(i) + (1./lambda_users(i))*num_events_matrix ;
+%         end
+        
         for i = 1:num_users
-            num_events_matrix = 1:j;
-            event_times_users(i, :) = offset_users(i) + (1./lambda_users(i))*num_events_matrix ;
+            inter_event_times(i, j) = 1/lambda_users(1, i)*log(1./rand(1,1));
+            event_times_users(i, :) = cumsum(inter_event_times(i, :));
         end
         
         if (min(event_times_users(:, j)) > largest_time)

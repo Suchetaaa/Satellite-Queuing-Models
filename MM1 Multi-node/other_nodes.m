@@ -7,7 +7,7 @@ function [arrival_times_in, delay, arrival_timestamps_all, departure_timestamps_
     j = 0;
 
     while done == 0
-        j = j+1
+        j = j+1;
         event_times_users = zeros(num_users, j);
         for i = 1:num_users
             inter_event_times(i, j) = 1/lambda_users(1, i)*log(1./rand(1,1));
@@ -72,8 +72,8 @@ function [arrival_times_in, delay, arrival_timestamps_all, departure_timestamps_
         delay = (departure_timestamps_out(ground_indices') - arrival_times_in');
     end
     
-    epsilon_node
-    round((1-epsilon_node)*num_useful)
+%     epsilon_node;
+%     round((1-epsilon_node)*num_useful);
     random_indices = randperm(num_useful, round((1-epsilon_node)*num_useful));
     departure_timestamps_out_1 = departure_timestamps_out;
     departure_timestamps_out_1(random_indices) = [];

@@ -1,44 +1,45 @@
-function [arrival_times_in, delay, arrival_timestamps_all, departure_timestamps_out_1, ground_indices_out, largest_time_out, buffer_lengths, waiting_times] = other_nodes(departure_timestamps, num_users, lambda_users, offset_users, mu_node, epsilon_node, largest_time, arrival_times_in, ground_indices_in)
+function [packets_out_sim, packets_out_theoretical, arrival_times_in, delay, arrival_timestamps_all, departure_timestamps_out_1, ground_indices_out, largest_time_out, buffer_lengths, waiting_times] = other_nodes(packets_in_theoretical, packets_in_sim, departure_timestamps, num_users, lambda_users, offset_users, mu_node, epsilon_node, largest_time, arrival_times_in, ground_indices_in)
 %     num_users = 10;
 %     lambda_users = abs(randn(1, num_users));
 %     mu_node = 1;
 %     epsilon_node = 0.6;
-    done = 0;
-    j = 0;
-
-    while done == 0
-        j = j+1;
-        event_times_users = zeros(num_users, j);
-        for i = 1:num_users
-            num_events_matrix = 1:j;
-            event_times_users(i, :) = offset_users(i) + (1./lambda_users(i))*num_events_matrix ;
-        end
-        
-        if (min(event_times_users(:, j)) > largest_time)
-            done = 1;
-        end
-%         event_times_users;
-    end
+%     done = 0;
+%     j = 0;
+% 
+%     while done == 0
+%         j = j+1;
+%         event_times_users = zeros(num_users, j);
+%         for i = 1:num_users
+%             num_events_matrix = 1:j;
+%             event_times_users(i, :) = offset_users(i) + (1./lambda_users(i))*num_events_matrix ;
+%         end
+%         
+%         if (min(event_times_users(:, j)) > largest_time)
+%             done = 1;
+%         end
+% %         event_times_users;
+%     end
+%     
+%     arrival_timestamps_all = sort(event_times_users(:));
+%     arrival_timestamps_all = arrival_timestamps_all';
     
-    arrival_timestamps_all = sort(event_times_users(:));
-    arrival_timestamps_all = arrival_timestamps_all';
-    
-    new = [departure_timestamps arrival_timestamps_all];
-    arrival_timestamps_all = sort(new(:));
+%     new = [departure_timestamps arrival_timestamps_all];
+    arrival_timestamps_all = departure_timestamps;
     
     a = arrival_timestamps_all <= largest_time;
     num_useful = numel(a(a>0));
-    arrival_timestamps_all = arrival_timestamps_all(1:num_useful, 1)';
+    arrival_timestamps_all = arrival_timestamps_all(1, 1:num_useful);
     
     offset = arrival_timestamps_all(1);
     
     [~, m] = size(ground_indices_in);
     ground_indices = zeros(1, m);
     
-    for k = 1 : m
-        ground_indices(1, k) = find(arrival_timestamps_all == departure_timestamps(1, ground_indices_in(1, k)));
-    end
+%     for k = 1 : m
+%         ground_indices(1, k) = find(arrival_timestamps_all == departure_timestamps(1, ground_indices_in(1, k)));
+%     end
      
+    ground_indices = ground_indices_in;
     server_timestamps = zeros(1, num_useful);
     departure_timestamps_out = zeros(1, num_useful);
     
@@ -95,6 +96,9 @@ function [arrival_times_in, delay, arrival_timestamps_all, departure_timestamps_
         ground_indices_out(1, k) = find(departure_timestamps_out_1 == departure_timestamps_out(1, ground_indices(1, k)));
     end
         
+    packets_out_theoretical = 0.9*packets_in_theoretical;
+    packets_out_sim = length(departure_timestamps_out_1);
+    
     largest_time_out = max(departure_timestamps_out_1); 
 end
     

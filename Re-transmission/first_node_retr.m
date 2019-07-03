@@ -12,8 +12,13 @@ function [ground_indices, final_arrival_times, departure_timestamps, waiting_tim
     event_times_users = zeros(num_users, num_events);
     num_events_matrix = 1:num_events;
 
+%     for i = 1:num_users
+%         event_times_users(i, :) = offset_users(i) + (1./lambda_users(1, i))*num_events_matrix ;
+%     end
+    
     for i = 1:num_users
-        event_times_users(i, :) = offset_users(i) + (1./lambda_users(i))*num_events_matrix ;
+        inter_event_times = 1/lambda_users(1, i)*log(1./rand(1,num_events));
+        event_times_users(i, :) = cumsum(inter_event_times);
     end
     
     offset = min(event_times_users(:, 1));

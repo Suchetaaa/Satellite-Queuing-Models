@@ -1,4 +1,4 @@
-function [ground_indices, final_arrival_times, departure_timestamps, waiting_times, buffer_lengths, largest_time] = first_node(num_users, lambda_users, mu_node, epsilon_node, num_events, num_events_considered)
+function [packets_out_sim, packets_out_theoretical, ground_indices, final_arrival_times, departure_timestamps, waiting_times, buffer_lengths, largest_time] = first_node(num_users, lambda_users, offset_users, mu_node, epsilon_node, num_events, num_events_considered)
     % num_users = 10;
     % lambda_users = abs(randn(1, num_users));
     % mu_node = 2;
@@ -7,10 +7,12 @@ function [ground_indices, final_arrival_times, departure_timestamps, waiting_tim
     % num_events_considered = 0.4*(num_users)*num_events;
     
     event_times_users = zeros(num_users, num_events);
+    num_events_matrix = 1:num_events;
 
     for i = 1:num_users
-        inter_event_times = 1/lambda_users(1, i)*log(1./rand(1,num_events));
-        event_times_users(i, :) = cumsum(inter_event_times);
+%         inter_event_times = 1/lambda_users(1, i)*log(1./rand(1,num_events));
+%         event_times_users(i, :) = cumsum(inter_event_times);
+        event_times_users(i, :) = offset_users(i) + (1./lambda_users(i))*num_events_matrix ;
     end
     
     offset = min(event_times_users(:, 1));
@@ -22,6 +24,8 @@ function [ground_indices, final_arrival_times, departure_timestamps, waiting_tim
 
     server_timestamps = zeros(1, num_events_considered);
     departure_timestamps = zeros(1, num_events_considered);
+    
+    packets_out_theoretical = 0.9*num_events_considered;
 
     server_timestamps(1) = offset;
     departure_timestamps(1) = server_timestamps(1) + inter_service_times(1);
@@ -51,10 +55,11 @@ function [ground_indices, final_arrival_times, departure_timestamps, waiting_tim
     
     final_arrival_times(random_indices) = [];
     
+    packets_out_sim = length(departure_timestamps);
+    
     largest_time = max(departure_timestamps);
     
     [~, m] = size(departure_timestamps);
-    
     ground_indices = 1:m;
 end
 

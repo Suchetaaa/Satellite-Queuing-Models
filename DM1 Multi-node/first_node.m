@@ -46,10 +46,10 @@ function [ground_indices, final_arrival_times, departure_timestamps, waiting_tim
     end
     
     waiting_times = (departure_timestamps - final_arrival_times);
-%     random_indices = randperm(num_events_considered, round((1-epsilon_node)*num_events_considered));
-%     departure_timestamps(random_indices) = [];
-%     
-%     final_arrival_times(random_indices) = [];
+    random_indices = randperm(num_events_considered, round((1-epsilon_node)*num_events_considered));
+    departure_timestamps(random_indices) = [];
+    
+    final_arrival_times(random_indices) = [];
     
     largest_time = max(departure_timestamps);
     
