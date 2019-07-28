@@ -1,3 +1,4 @@
+%Used to create a common time scale given two departure timestamps
 function [times] = common_scale(departure_timestamps_retransmission, departure_timestamps)
 	common_departures = [departure_timestamps_retransmission departure_timestamps];
 	common_departures = sort(common_departures(:));

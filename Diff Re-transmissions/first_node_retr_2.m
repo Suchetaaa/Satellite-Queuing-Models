@@ -1,20 +1,19 @@
-%Represents the first node for with re-transmissions = 2 WITH intermediate
-%traffic
-function [ground_indices, final_arrival_times, departure_timestamps, waiting_times, buffer_lengths, largest_time] = first_node_retr(num_users, lambda_users, offset_users, mu_node, epsilon_node, num_events, num_events_considered, max_retransmissions)
+%Represents the first node for with re-transmissions = 2
+function [ground_indices, final_arrival_times, departure_timestamps, waiting_times, buffer_lengths, largest_time] = first_node_retr_2(num_users, lambda_users, offset_users, mu_node, epsilon_node, num_events, num_events_considered, max_retransmissions)
     
     event_times_users = zeros(num_users, num_events);
     num_events_matrix = 1:num_events;
 
-    %Comment this out to get periodic arrivals
-%     for i = 1:num_users
-%         event_times_users(i, :) = offset_users(i) + (1./lambda_users(1, i))*num_events_matrix ;
-%     end
-    
-    %Poisson arrivals
+    %Deterministic or Periodic Arrivals
     for i = 1:num_users
-        inter_event_times = 1/lambda_users(1, i)*log(1./rand(1,num_events));
-        event_times_users(i, :) = cumsum(inter_event_times);
+        event_times_users(i, :) = offset_users(i) + (1./lambda_users(1, i))*num_events_matrix ;
     end
+    
+    %Comment this out to get poisson arrivals 
+%     for i = 1:num_users
+%         inter_event_times = 1/lambda_users(1, i)*log(1./rand(1,num_events));
+%         event_times_users(i, :) = cumsum(inter_event_times);
+%     end
     
     offset = min(event_times_users(:, 1));
 
@@ -34,17 +33,17 @@ function [ground_indices, final_arrival_times, departure_timestamps, waiting_tim
     %1 means the packet is missed, 0 means it is transmitted
     missed = zeros(1, num_events_considered);
     
-    %Contains all the indices which require the first retransmission
     random_indices_1_useful = rand(1, num_events_considered) > epsilon_node;
+    %random_indices_1 holds 0 and 1, 1 means retransmission is required
     random_indices_1 = find(random_indices_1_useful == 1);
     number = length(random_indices_1);
-    
-    %Contains all those indices which require the second retransmission
     random_indices_2_useful = rand(1, number) > epsilon_node;
+    %1 means second retransmission is required, 0 means only the first
+    %retransmission
     random_indices_2 = find(random_indices_2_useful == 1);
     number_2 = length(random_indices_2);
-    
-    %1 means no transmission can occur, 0 means 2 retransmissions
+    %1 means transmission cannot occur, 0 means only the second
+    %retransmission
     random_indices_3 = rand(1, number_2) > epsilon_node;
 
     for i = 1 : number_2 
@@ -103,7 +102,7 @@ function [ground_indices, final_arrival_times, departure_timestamps, waiting_tim
         end
     end
     
-    %Buffer Lengths vs Time for the present node
+    %Buffer Lengths vs time for the present node
     times = 0:0.5:departure_timestamps(num_events_considered);
     buffer_lengths = zeros(length(times), 1);
     for i = 1:length(times)
@@ -121,8 +120,8 @@ function [ground_indices, final_arrival_times, departure_timestamps, waiting_tim
     
     %Updating the departure and arrival timestamps
     departure_timestamps(random_indices) = [];
-    
     final_arrival_times(random_indices) = [];
+    
     largest_time = max(departure_timestamps);
     
     [~, m] = size(departure_timestamps);

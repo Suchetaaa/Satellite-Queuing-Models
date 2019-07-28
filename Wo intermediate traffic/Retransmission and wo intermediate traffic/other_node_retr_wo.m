@@ -1,53 +1,19 @@
-%Represents every other node apart from the first node with 4
-%retransmissions
-function [arrival_times_in, delay, arrival_timestamps_all, departure_timestamps_out_1, ground_indices_out, largest_time_out, buffer_lengths, waiting_times] = other_node_retr(departure_timestamps, num_users, lambda_users, offset_users, mu_node, epsilon_node, largest_time, arrival_times_in, ground_indices_in, max_retransmissions)
-    %Generates arrival times of the intermediate traffic taking into
-    %account the 'largest time' coming from the previous time
-    done = 0;
-    j = 0;
-
-    while done == 0
-        j = j+1;
-        event_times_users = zeros(num_users, j);
-        
-        %For periodic and deterministic arrivals
-%         for i = 1:num_users
-%             num_events_matrix = 1:j;
-%             event_times_users(i, :) = offset_users(i) + (1./lambda_users(i))*num_events_matrix ;
-%         end
-        
-        %Poisson arrivals
-        for i = 1:num_users
-            inter_event_times(i, j) = 1/lambda_users(1, i)*log(1./rand(1,1));
-            event_times_users(i, :) = cumsum(inter_event_times(i, :));
-        end
-        
-        if (min(event_times_users(:, j)) > largest_time)
-            done = 1;
-        end
-    end
+%Represents the first node for with re-transmissions = 2 WITHOUT intermediate
+%traffic
+function [arrival_times_in, delay, arrival_timestamps_all, departure_timestamps_out_1, ground_indices_out, largest_time_out, buffer_lengths, waiting_times] = other_node_retr(departure_timestamps, mu_node, epsilon_node, largest_time, arrival_times_in, ground_indices_in, max_retransmissions)
     
-    %Incorporates intermediate and incoming traffic and sorts them
-    arrival_timestamps_all = sort(event_times_users(:));
-    arrival_timestamps_all = arrival_timestamps_all';
-    
-    new = [departure_timestamps arrival_timestamps_all];
+    %Packets arriving from the previous node
+    new = departure_timestamps;
     arrival_timestamps_all = sort(new(:));
     
-    a = arrival_timestamps_all <= largest_time;
-    num_useful = numel(a(a>0));
+    num_useful = length(departure_timestamps);
     arrival_timestamps_all = arrival_timestamps_all(1:num_useful, 1)';
     
     offset = arrival_timestamps_all(1);
     
     [~, m] = size(ground_indices_in);
-    ground_indices = zeros(1, m);
-    
-    %Re-computing the ground indices after incorporating intermediate
-    %traffic
-    for k = 1 : m
-        ground_indices(1, k) = find(arrival_timestamps_all == departure_timestamps(1, ground_indices_in(1, k)));
-    end
+
+    ground_indices = ground_indices_in;
      
     server_timestamps = zeros(1, num_useful);
     departure_timestamps_out = zeros(1, num_useful);
@@ -66,12 +32,12 @@ function [arrival_times_in, delay, arrival_timestamps_all, departure_timestamps_
     random_indices_1 = find(random_indices_1_useful == 1);
     number = length(random_indices_1);
     
-    %Contains all those indices which require the second retransmission
+    %Contains all the indices which require the first retransmission
     random_indices_2_useful = rand(1, number) > epsilon_node;
     random_indices_2 = find(random_indices_2_useful == 1);
     number_2 = length(random_indices_2);
     
-    %1 means transmission cannot occur, 0 means 1 retransmission
+    %1 means transmission cannot occur, 0 means 2 retransmissions
     random_indices_3 = rand(1, number_2) > epsilon_node;
 
     for i = 1 : number_2 
@@ -103,6 +69,8 @@ function [arrival_times_in, delay, arrival_timestamps_all, departure_timestamps_
         departure_timestamps_out(1) = server_timestamps(1) + inter_service_times(1);
     end
     
+    
+
     for i = 2:num_useful
         if (retransmissions(i) == 2)
             if arrival_timestamps_all(i) < departure_timestamps_out(i-1)
@@ -150,12 +118,8 @@ function [arrival_times_in, delay, arrival_timestamps_all, departure_timestamps_
     %Random indices are basically the indices which are not transmitted
     random_indices = find(missed == 1);
     departure_timestamps_out_1 = departure_timestamps_out;
-    
-    %Updating the departure timestamps
     departure_timestamps_out_1(random_indices) = [];
    
-    %Checking if any of the ground indices are also present in random
-    %indices and necessary actions
     l = 0;
     for k = 1 : m
         a = find(random_indices == ground_indices(1, k)); 
@@ -170,7 +134,7 @@ function [arrival_times_in, delay, arrival_timestamps_all, departure_timestamps_
         arrival_times_in(unwanted_indices) = [];
     end
     
-    %Final ground indices which are returned
+    %Updating the ground indices which are to be returned
     for k = 1 : m-l
         ground_indices_out(1, k) = find(departure_timestamps_out_1 == departure_timestamps_out(1, ground_indices(1, k)));
     end

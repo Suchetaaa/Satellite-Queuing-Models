@@ -1,20 +1,19 @@
-%Represents the first node for with re-transmissions = 2 WITH intermediate
-%traffic
-function [ground_indices, final_arrival_times, departure_timestamps, waiting_times, buffer_lengths, largest_time] = first_node_retr(num_users, lambda_users, offset_users, mu_node, epsilon_node, num_events, num_events_considered, max_retransmissions)
+%Represents the first node for with re-transmissions = 3
+function [ground_indices, final_arrival_times, departure_timestamps, waiting_times, buffer_lengths, largest_time] = first_node_retr_3(num_users, lambda_users, offset_users, mu_node, epsilon_node, num_events, num_events_considered, max_retransmissions)
     
     event_times_users = zeros(num_users, num_events);
     num_events_matrix = 1:num_events;
 
-    %Comment this out to get periodic arrivals
-%     for i = 1:num_users
-%         event_times_users(i, :) = offset_users(i) + (1./lambda_users(1, i))*num_events_matrix ;
-%     end
-    
-    %Poisson arrivals
+    %Deterministic or Periodic Arrivals
     for i = 1:num_users
-        inter_event_times = 1/lambda_users(1, i)*log(1./rand(1,num_events));
-        event_times_users(i, :) = cumsum(inter_event_times);
+        event_times_users(i, :) = offset_users(i) + (1./lambda_users(1, i))*num_events_matrix ;
     end
+    
+    %Comment this out to get poisson arrivals 
+%     for i = 1:num_users
+%         inter_event_times = 1/lambda_users(1, i)*log(1./rand(1,num_events));
+%         event_times_users(i, :) = cumsum(inter_event_times);
+%     end
     
     offset = min(event_times_users(:, 1));
 
@@ -34,38 +33,58 @@ function [ground_indices, final_arrival_times, departure_timestamps, waiting_tim
     %1 means the packet is missed, 0 means it is transmitted
     missed = zeros(1, num_events_considered);
     
-    %Contains all the indices which require the first retransmission
     random_indices_1_useful = rand(1, num_events_considered) > epsilon_node;
+    
+    %Contains all the indices which require the first retransmission
     random_indices_1 = find(random_indices_1_useful == 1);
     number = length(random_indices_1);
+    random_indices_2_useful = rand(1, number) > epsilon_node;
     
     %Contains all those indices which require the second retransmission
-    random_indices_2_useful = rand(1, number) > epsilon_node;
     random_indices_2 = find(random_indices_2_useful == 1);
     number_2 = length(random_indices_2);
+    random_indices_3_useful = rand(1, number_2) > epsilon_node;
     
-    %1 means no transmission can occur, 0 means 2 retransmissions
-    random_indices_3 = rand(1, number_2) > epsilon_node;
+    %contains all those indices which require the third retransmission
+    random_indices_3 = find(random_indices_3_useful == 1);
+    number_3 = length(random_indices_3);
+    random_indices_4 = rand(1, number_3) > epsilon_node;
 
-    for i = 1 : number_2 
-        if (random_indices_3(i) == 1)
-            missed(random_indices_1(random_indices_2(i))) = 1;
+    for i = 1 : number_3
+        if (random_indices_4(i) == 1)
+            missed(random_indices_1(random_indices_2(random_indices_3(i)))) = 1;
         end
     end
-            
-    for i = 1:number
-        if (random_indices_2_useful(i) == 1)
-            retransmissions(1, random_indices_1(i)) = 2;
-        else
-            retransmissions(1, random_indices_1(i)) = 1;
-        end
+    
+    random_indices_3_actual = zeros(1, number_3);
+    random_indices_2_actual = zeros(1, number_2);
+    
+    for i = 1:number_3
+        %Contains the actual indices from the (1: num_events_considered) which require 3 retransmissions
+        random_indices_3_actual(i) = random_indices_1(random_indices_2(random_indices_3(i)));
+        retransmissions(1, random_indices_1(random_indices_2(random_indices_3(i)))) = 3;     
     end
-
+    
+    for i = 1:number_2
+        random_indices_2_actual(i) = random_indices_1(random_indices_2(i));
+    end
+    
+    %Contains the actual indices from the (1: num_events_considered) which require 2 retransmissions
+    retransmissions_2_indices = setdiff(random_indices_2_actual, random_indices_3_actual);
+    %Contains the actual indices from the (1: num_events_considered) which require 1 retransmissions
+    retransmissions_1_indices = setdiff(random_indices_1, random_indices_2_actual);
+    
+    retransmissions(retransmissions_2_indices) = 2;
+    retransmissions(retransmissions_1_indices) = 1;
+    
     %Assigning departure timestamps tp the packets
     server_timestamps(1) = offset;
     index_missing = 1;
 
-    if (retransmissions(1) == 2)
+    if (retransmissions(1) == 3)
+        departure_timestamps(1) = server_timestamps(1) + inter_service_times(1) + inter_service_times(2) + inter_service_times(3) + inter_service_times(4);
+        index_missing = index_missing + 3;
+    elseif (retransmissions(1) == 2)
         departure_timestamps(1) = server_timestamps(1) + inter_service_times(1) + inter_service_times(2) + inter_service_times(3);
         index_missing = index_missing + 2;
     elseif (retransmissions(1) == 1)
@@ -77,7 +96,15 @@ function [ground_indices, final_arrival_times, departure_timestamps, waiting_tim
     
 
     for i = 2:num_events_considered
-        if (retransmissions(i) == 2)
+        if (retransmissions(i) == 3)
+            if final_arrival_times(i) < departure_timestamps(i-1)
+                server_timestamps(i) = departure_timestamps(i-1);
+            else
+                server_timestamps(i) = final_arrival_times(i);
+            end
+            departure_timestamps(i) = server_timestamps(i) + inter_service_times(i+index_missing-1) + inter_service_times(i+index_missing) + inter_service_times(i+index_missing+1) + inter_service_times(i+index_missing+2);
+            index_missing = index_missing + 3;
+        elseif (retransmissions(i) == 2)
             if final_arrival_times(i) < departure_timestamps(i-1)
                 server_timestamps(i) = departure_timestamps(i-1);
             else
@@ -121,8 +148,8 @@ function [ground_indices, final_arrival_times, departure_timestamps, waiting_tim
     
     %Updating the departure and arrival timestamps
     departure_timestamps(random_indices) = [];
-    
     final_arrival_times(random_indices) = [];
+    
     largest_time = max(departure_timestamps);
     
     [~, m] = size(departure_timestamps);

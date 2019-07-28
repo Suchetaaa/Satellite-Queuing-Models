@@ -1,7 +1,11 @@
+%Plots the Average AoI for zero-wait, poisson and periodic tandem queues in
+%one figure
+
+%Rho array (Rho is defined as mu_node_1/mu_node_2)
 rho = 0.3:0.001:0.8;
 lambda = 0.1;
 
-[av_age_simulation, av_age_theoretical] = first_node(rho);
+[av_age_simulation, av_age_theoretical] = zero_wait(rho);
 [av_age_poisson_simulation, av_age_poisson_theoretical] = poisson(rho, lambda);
 [av_age_periodic_simulation, av_age_periodic_theoretical] = periodic(rho, lambda);
 

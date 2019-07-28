@@ -23,8 +23,6 @@ for k = 1:3
     % lambda_users = (3-0).*rand(10, num_users) + 0;
 %     lambda_users = lambda(k)*ones(10, 20);
 
-
-
     max_retransmissions = 2;
 
     num_nodes = 2;
@@ -33,8 +31,6 @@ for k = 1:3
 %     mu_node = num_users*higher;
     num_events = 3000;
     
-
-
     for j = 1 : length(mul)
 
 

@@ -1,7 +1,8 @@
-%Computes the average AoI given departure timestamps and arrival times
+%Returns the average age given departure_timestamps and arrival_times of
+%ground indices
 function [av_age] = av_age_func(departure_timestamps, final_arrival_times)
     
-    %Generates times for the time axis
+    %Generates the time axis
     times = 0:0.1:departure_timestamps(1);
     [~, num_events] = size(departure_timestamps);
     for i = 2:num_events
@@ -9,7 +10,7 @@ function [av_age] = av_age_func(departure_timestamps, final_arrival_times)
         times = [times dummy];
     end
 
-    %Computes the age for evry time instant
+    %Computes age
     j = 1;
     offset = 0;
     age = times;
@@ -24,9 +25,10 @@ function [av_age] = av_age_func(departure_timestamps, final_arrival_times)
 
 %     plot(times, age);
 
+    %Finds the area betwwen the age and time curve
     trapz(times, age);
     max(times);
     
-    %Average AoI
+    %Average age of information
     av_age = trapz(times, age)/max(times);
 end

@@ -1,5 +1,8 @@
-function [arrival_times_in, delay, arrival_timestamps_all, departure_timestamps_out_1, ground_indices_out, largest_time_out, buffer_lengths, waiting_times] = other_nodes(departure_timestamps, num_users, lambda_users, offset_users, mu_node, epsilon_node, largest_time, arrival_times_in, ground_indices_in)
-
+%Represents every other node apart from the first node with 0
+%retransmissions
+function [arrival_times_in, delay, arrival_timestamps_all, departure_timestamps_out_1, ground_indices_out, largest_time_out, buffer_lengths, waiting_times] = other_nodes_retr_0(departure_timestamps, num_users, lambda_users, offset_users, mu_node, epsilon_node, largest_time, arrival_times_in, ground_indices_in)
+    %Generates arrival times of the intermediate traffic taking into
+    %account the 'largest time' coming from the previous time
     done = 0;
     j = 0;
 
@@ -16,12 +19,14 @@ function [arrival_times_in, delay, arrival_timestamps_all, departure_timestamps_
         end
     end
     
+    %Incorporates intermediate and incoming traffic and sorts them
     arrival_timestamps_all = sort(event_times_users(:));
     arrival_timestamps_all = arrival_timestamps_all';
     
     new = [departure_timestamps arrival_timestamps_all];
     arrival_timestamps_all = sort(new(:));
     
+    %Extracts only the useful indices
     a = arrival_timestamps_all <= largest_time;
     num_useful = numel(a(a>0));
     arrival_timestamps_all = arrival_timestamps_all(1:num_useful, 1)';
@@ -31,6 +36,8 @@ function [arrival_times_in, delay, arrival_timestamps_all, departure_timestamps_
     [~, m] = size(ground_indices_in);
     ground_indices = zeros(1, m);
     
+    %Re-computing the ground indices after incorporating intermediate
+    %traffic
     for k = 1 : m
         ground_indices(1, k) = find(arrival_timestamps_all == departure_timestamps(1, ground_indices_in(1, k)));
     end
@@ -38,8 +45,10 @@ function [arrival_times_in, delay, arrival_timestamps_all, departure_timestamps_
     server_timestamps = zeros(1, num_useful);
     departure_timestamps_out = zeros(1, num_useful);
     
+    %Inter-service times
     inter_service_times = 1/mu_node*log(1./rand(1,num_useful));
     
+    %Assigning the departure timestamps to packets
     server_timestamps(1) = offset;
     departure_timestamps_out(1) = server_timestamps(1) + inter_service_times(1);
     
@@ -52,6 +61,7 @@ function [arrival_times_in, delay, arrival_timestamps_all, departure_timestamps_
        departure_timestamps_out(i) = server_timestamps(i) + inter_service_times(i);   
     end
     
+    %Buffer Lengths vs Time for the present node
     times = 0:0.5:departure_timestamps_out(num_useful);
     buffer_lengths = zeros(length(times), 1);
     for i = 1:length(times)
@@ -67,12 +77,16 @@ function [arrival_times_in, delay, arrival_timestamps_all, departure_timestamps_
     for i = 1 : m
         delay = (departure_timestamps_out(ground_indices') - arrival_times_in');
     end
-  
+    
+    %Random indices - 0 means that the packet is transmitted, 1 means
+    %cannot be transmitted
     random_indices = rand(1, num_useful) > epsilon_node;
     random_indices = find(random_indices == 1);
     departure_timestamps_out_1 = departure_timestamps_out;
     departure_timestamps_out_1(random_indices) = [];
    
+    %Checking if any of the ground indices are also present in random
+    %indices and necessary actions 
     l = 0;
     for k = 1 : m
         a = find(random_indices == ground_indices(1, k)); 
@@ -85,8 +99,8 @@ function [arrival_times_in, delay, arrival_timestamps_all, departure_timestamps_
     ground_indices(unwanted_indices) = [];
     arrival_times_in(unwanted_indices) = [];
     
+    %Final ground indices which are returned 
     for k = 1 : m-l
-        departure_timestamps_out(1, ground_indices(1, k));
         ground_indices_out(1, k) = find(departure_timestamps_out_1 == departure_timestamps_out(1, ground_indices(1, k)));
     end
         

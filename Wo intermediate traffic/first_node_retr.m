@@ -1,16 +1,16 @@
 %Represents the first node for with re-transmissions = 2 WITH intermediate
 %traffic
 function [ground_indices, final_arrival_times, departure_timestamps, waiting_times, buffer_lengths, largest_time] = first_node_retr(num_users, lambda_users, offset_users, mu_node, epsilon_node, num_events, num_events_considered, max_retransmissions)
-    
+
     event_times_users = zeros(num_users, num_events);
     num_events_matrix = 1:num_events;
 
-    %Comment this out to get periodic arrivals
+    %Comment this out to get periodic arrivals 
 %     for i = 1:num_users
 %         event_times_users(i, :) = offset_users(i) + (1./lambda_users(1, i))*num_events_matrix ;
 %     end
     
-    %Poisson arrivals
+    %Poisson arrivals 
     for i = 1:num_users
         inter_event_times = 1/lambda_users(1, i)*log(1./rand(1,num_events));
         event_times_users(i, :) = cumsum(inter_event_times);
@@ -121,8 +121,8 @@ function [ground_indices, final_arrival_times, departure_timestamps, waiting_tim
     
     %Updating the departure and arrival timestamps
     departure_timestamps(random_indices) = [];
-    
     final_arrival_times(random_indices) = [];
+    
     largest_time = max(departure_timestamps);
     
     [~, m] = size(departure_timestamps);

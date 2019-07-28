@@ -1,35 +1,45 @@
-function [ground_indices, final_arrival_times, departure_timestamps, waiting_times, buffer_lengths, largest_time] = first_node(num_users, lambda_users, mu_node, epsilon_node, num_events, num_events_considered)
+function [ground_indices, final_arrival_times, departure_timestamps, waiting_times, buffer_lengths, largest_time] = first_node(num_users, lambda_users, offset_users, mu_node, epsilon_node, num_events, num_events_considered)
     
+    %Generates arrival timestamps (periodic or deterministic)
     event_times_users = zeros(num_users, num_events);
     
-    %Poisson Arrivals
+    num_events_matrix = 1:num_events;
+
     for i = 1:num_users
-        inter_event_times = 1/lambda_users(1, i)*log(1./rand(1,num_events));
-        event_times_users(i, :) = cumsum(inter_event_times);
+        event_times_users(i, :) = offset_users(i) + (1./lambda_users(i))*num_events_matrix ;
     end
     
+    %First event, modelled as t = 0
     offset = min(event_times_users(:, 1));
-
+    
+    %Final arrival timestamps obtained by sorting the timestamps of all
+    %users
     final_arrival_times = sort(event_times_users(:));
     final_arrival_times = final_arrival_times(1:num_events_considered);
 
+    %Generates inter-service times for the present node
     inter_service_times = 1/mu_node*log(1./rand(1,num_events_considered));
 
     server_timestamps = zeros(1, num_events_considered);
     departure_timestamps = zeros(1, num_events_considered);
 
+    %Assigning of departure timestamps for all the packets
     server_timestamps(1) = offset;
     departure_timestamps(1) = server_timestamps(1) + inter_service_times(1);
 
     for i = 2:num_events_considered
+        
+        %If the 'i'th arrival happens before (i-1) packet leaves
         if final_arrival_times(i) < departure_timestamps(i-1)
             server_timestamps(i) = departure_timestamps(i-1);
         else
+        %If the (i) packet comes after the (i-1) packet leaves 
             server_timestamps(i) = final_arrival_times(i);
         end
         departure_timestamps(i) = server_timestamps(i) + inter_service_times(i);
     end
     
+    %Calculates the buffer length in the node vs time
     times = 0:0.5:departure_timestamps(num_events_considered);
     buffer_lengths = zeros(length(times), 1);
     for i = 1:length(times)
@@ -40,15 +50,21 @@ function [ground_indices, final_arrival_times, departure_timestamps, waiting_tim
         buffer_lengths(i, 1) = (num_arrivals-num_departures);
     end
     
+    %Waiting time of each of the ground packets 
     waiting_times = (departure_timestamps - final_arrival_times);
-%     random_indices = randperm(num_events_considered, round((1-epsilon_node)*num_events_considered));
-%     departure_timestamps(random_indices) = [];
-%     
-%     final_arrival_times(random_indices) = [];
+    
+    %Removing some packets as part of the reliability (epsilon) measure
+    random_indices = randperm(num_events_considered, round((1-epsilon_node)*num_events_considered));
+    
+    %New departure and arrival timestamps
+    departure_timestamps(random_indices) = [];
+    final_arrival_times(random_indices) = [];
     
     largest_time = max(departure_timestamps);
     
     [~, m] = size(departure_timestamps);
+    
+    %Ground packets indices
     ground_indices = 1:m;
 end
 
