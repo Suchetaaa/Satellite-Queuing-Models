@@ -6,4 +6,4 @@ This project dealt with modelling low-orbit Satellite Communication System using
 3. The metric, **Age of Information** is found out theoretically and by simulation for a given model.  
 4. Various methods have been tried to minimize AoI. 
 <br/>
-Submitted a paper to **IEEE International Conference on Communications** (under review)
+Submitted a paper to **IEEE** **International Conference on Communications** **2020** (under review)
