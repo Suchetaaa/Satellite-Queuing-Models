@@ -1,7 +1,0 @@
-# Satellite Multi-Hop Queuing Models for the Space IoT
-
-Modelling the Low-Orbit Satellite Communication System using Queing Models. <br/>
-Each node is constrained to receive Poisson or/and Periodic traffics in a cascaded fashion. <br/>
-The metric, **Age of Information** is found out theoretically and by simulation for a given model. <br/> 
-Various methods have been tried to minimize AoI. <br/>
-
